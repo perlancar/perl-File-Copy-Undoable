@@ -52,12 +52,29 @@ test_tx_action(
         remove_tree "s", "t";
         mkdir "s"; write_file("s/f1", "foo");
     },
-    skip_repeat_do => 1,
     after_do     => sub {
         ok( (-d "t"), "t exists");
         is(scalar(read_file "t/f1"), "foo", "t/f1 exists");
     },
     after_undo   => sub {
+        ok(!(-e "t"), "t doesn't exist");
+    },
+);
+
+test_tx_action(
+    name          => "failure in copy -> rollback",
+    tmpdir        => $tmpdir,
+    f             => "File::Copy::Undoable::cp",
+    args          => {source=>"s", target=>"t",
+                      rsync_opts=>"--foo", # bogus
+                  },
+    reset_state   => sub {
+        diag $CWD;
+        remove_tree "s", "t";
+        mkdir "s"; write_file("s/f1", "foo");
+    },
+    status       => 532,
+    after_do     => sub {
         ok(!(-e "t"), "t doesn't exist");
     },
 );
