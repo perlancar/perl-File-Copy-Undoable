@@ -1,0 +1,74 @@
+#!perl
+
+use 5.010;
+use strict;
+use warnings;
+use FindBin '$Bin';
+use lib $Bin, "$Bin/t";
+use Log::Any '$log';
+
+use File::chdir;
+use File::Copy::Undoable;
+use File::Path qw(remove_tree);
+use File::Slurp;
+use File::Temp qw(tempdir);
+use Test::More 0.98;
+use Test::Perinci::Tx::Manager qw(test_tx_action);
+
+my $tmpdir = tempdir(CLEANUP=>1);
+$CWD = $tmpdir;
+
+test_tx_action(
+    name          => "source doesn't exist -> error",
+    tmpdir        => $tmpdir,
+    f             => "File::Copy::Undoable::cp",
+    args          => {source=>"s", target=>"t"},
+    reset_state   => sub {
+        remove_tree "s", "t";
+    },
+    status        => 412,
+);
+
+test_tx_action(
+    name          => "target exists -> noop",
+    tmpdir        => $tmpdir,
+    f             => "File::Copy::Undoable::cp",
+    args          => {source=>"s", target=>"t"},
+    reset_state   => sub {
+        remove_tree "s", "t";
+        mkdir "s";
+        write_file "t", "";
+    },
+    status        => 304,
+);
+
+test_tx_action(
+    name          => "copy",
+    tmpdir        => $tmpdir,
+    f             => "File::Copy::Undoable::cp",
+    args          => {source=>"s", target=>"t"},
+    reset_state   => sub {
+        diag $CWD;
+        remove_tree "s", "t";
+        mkdir "s"; write_file("s/f1", "foo");
+    },
+    skip_repeat_do => 1,
+    after_do     => sub {
+        ok( (-d "t"), "t exists");
+        is(scalar(read_file "t/f1"), "foo", "t/f1 exists");
+    },
+    after_undo   => sub {
+        ok(!(-e "t"), "t doesn't exist");
+    },
+);
+
+# XXX test crash during rsync
+
+DONE_TESTING:
+done_testing();
+if (Test::More->builder->is_passing) {
+    #diag "all tests successful, deleting test data dir";
+    $CWD = "/";
+} else {
+    diag "there are failing tests, not deleting test data dir $tmpdir";
+}
