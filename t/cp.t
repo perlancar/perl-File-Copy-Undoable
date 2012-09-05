@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use FindBin '$Bin';
 use lib $Bin, "$Bin/t";
-use Log::Any '$log';
+#use Log::Any '$log';
 
 use File::chdir;
 use File::Copy::Undoable;
@@ -48,7 +48,6 @@ test_tx_action(
     f             => "File::Copy::Undoable::cp",
     args          => {source=>"s", target=>"t"},
     reset_state   => sub {
-        diag $CWD;
         remove_tree "s", "t";
         mkdir "s"; write_file("s/f1", "foo");
     },
@@ -69,7 +68,6 @@ test_tx_action(
                       rsync_opts=>"--foo", # bogus
                   },
     reset_state   => sub {
-        diag $CWD;
         remove_tree "s", "t";
         mkdir "s"; write_file("s/f1", "foo");
     },
