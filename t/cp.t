@@ -12,8 +12,11 @@ use File::Copy::Undoable;
 use File::Path qw(remove_tree);
 use File::Slurp;
 use File::Temp qw(tempdir);
+use File::Which;
 use Test::More 0.98;
 use Test::Perinci::Tx::Manager qw(test_tx_action);
+
+plan skip_all => "rsync not available in PATH" unless which('rsync');
 
 my $tmpdir = tempdir(CLEANUP=>1);
 $CWD = $tmpdir;
