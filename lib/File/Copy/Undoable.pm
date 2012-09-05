@@ -7,6 +7,7 @@ use Log::Any '$log';
 
 use Builtin::Logged qw(system);
 use File::Trash::Undoable;
+#use PerlX::Maybe;
 use SHARYANTO::File::Util qw(file_exists);
 use SHARYANTO::Proc::ChildError qw(explain_child_error);
 
@@ -48,6 +49,27 @@ directory name. For example: cp(source=>'/dir', target=>'/a') will copy /dir to
 _
             req    => 1,
             pos    => 1,
+        },
+        target_owner => {
+            schema => 'str*',
+            summary => 'Set ownership of target',
+            description => <<'_',
+
+If set, will do a `chmod -Rh` on the target after rsync to set ownership. This
+usually requires super-user privileges. An example of this is copying files on
+behalf of user from a source that is inaccessible by the user (e.g. a system
+backup location). Or, setting up user's home directory when creating a user.
+
+_
+        },
+        target_group => {
+            schema => 'str*',
+            summary => 'Set group of target',
+            description => <<'_',
+
+See `target_owner`.
+
+_
         },
         rsync_opts => {
             schema => [array => {of=>'str*', default=>['-a']}],
@@ -102,7 +124,16 @@ sub cp {
         my @cmd = ("rsync", @$rsync_opts, "$source/", "$target/");
         $log->info("Rsync-ing $source -> $target ...");
         system @cmd;
-        return [500, "rsync: ".explain_child_error($?)] if $?;
+        return [500, "Can't rsync: ".explain_child_error($?)] if $?;
+        $log->info("Chown-ing $target ...");
+        if (defined($args{target_owner}) || defined($args{target_group})) {
+            @cmd = (
+                "chown", "-Rh",
+                join("", $args{target_owner}//"", ":", $args{target_group}//""),
+                $target);
+            system @cmd;
+            return [500, "Can't chown: ".explain_child_error($?)] if $?;
+        }
         return [200, "OK"];
     }
     [400, "Invalid -tx_action"];
