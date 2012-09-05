@@ -1,5 +1,12 @@
 Revision history for File-Copy-Undoable
 
+0.02    2012-09-05 (SHARYANTO)
+
+        [ENHANCEMENTS]
+
+        - Add 'target_owner' and 'target_group' argument.
+
+
 0.01    2012-09-05 (SHARYANTO)
 
         First release.
