@@ -118,7 +118,7 @@ sub cp {
 With C<rsync>, we can continue interrupted transfer. We need this ability for
 recovery. Also, C<rsync> can handle hardlinks and preservation of ownership,
 something which L<File::Copy::Recursive> currently does not do. And, being
-implemented in C, it might be faster when processing large files/trees..
+implemented in C, it might be faster when processing large files/trees.
 
 
 =head1 SEE ALSO
