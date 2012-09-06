@@ -60,6 +60,8 @@ usually requires super-user privileges. An example of this is copying files on
 behalf of user from a source that is inaccessible by the user (e.g. a system
 backup location). Or, setting up user's home directory when creating a user.
 
+Will do nothing if not running as super-user.
+
 _
         },
         target_group => {
@@ -127,12 +129,17 @@ sub cp {
         return [500, "Can't rsync: ".explain_child_error($?)] if $?;
         $log->info("Chown-ing $target ...");
         if (defined($args{target_owner}) || defined($args{target_group})) {
-            @cmd = (
-                "chown", "-Rh",
-                join("", $args{target_owner}//"", ":", $args{target_group}//""),
-                $target);
-            system @cmd;
-            return [500, "Can't chown: ".explain_child_error($?)] if $?;
+            if ($> == 0) {
+                @cmd = (
+                    "chown", "-Rh",
+                    join("", $args{target_owner}//"", ":",
+                         $args{target_group}//""),
+                    $target);
+                system @cmd;
+                return [500, "Can't chown: ".explain_child_error($?)] if $?;
+            } else {
+                $log->debug("Not running as root, not doing chown");
+            }
         }
         return [200, "OK"];
     }

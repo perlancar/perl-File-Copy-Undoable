@@ -15,17 +15,20 @@ use File::Temp qw(tempdir);
 use Test::More 0.98;
 use Test::Perinci::Tx::Manager qw(test_tx_action);
 
-plan skip_all => "this test requires running as root" if $>;
+plan skip_all => "this test requires running as normal user" if !$>;
 
 my $tmpdir = tempdir(CLEANUP=>1);
 $CWD = $tmpdir;
+
+my $uid = $> == 65535 ? $>-1 : $>+1;
+my $gid = $) == 65535 ? $)-1 : $)+1;
 
 test_tx_action(
     name          => "copy",
     tmpdir        => $tmpdir,
     f             => "File::Copy::Undoable::cp",
     args          => {source=>"s", target=>"t",
-                      target_owner=>1000, target_group=>2000},
+                      target_owner=>$uid, target_group=>$gid},
     reset_state   => sub {
         remove_tree "s", "t";
         mkdir "s"; write_file("s/f1", "foo");
@@ -34,8 +37,8 @@ test_tx_action(
         ok( (-d "t"), "t exists");
         is(scalar(read_file "t/f1"), "foo", "t/f1 exists");
         my @st = stat "t";
-        is($st[4], 1000, "owner set");
-        is($st[4], 1000, "group set");
+        is($st[4], $>, "owner still user");
+        is($st[5], $)+0, "group still user's group");
 
     },
     after_undo   => sub {
