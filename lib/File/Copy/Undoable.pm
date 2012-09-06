@@ -127,9 +127,9 @@ sub cp {
         $log->info("Rsync-ing $source -> $target ...");
         system @cmd;
         return [500, "Can't rsync: ".explain_child_error($?)] if $?;
-        $log->info("Chown-ing $target ...");
         if (defined($args{target_owner}) || defined($args{target_group})) {
             if ($> == 0) {
+                $log->info("Chown-ing $target ...");
                 @cmd = (
                     "chown", "-Rh",
                     join("", $args{target_owner}//"", ":",
