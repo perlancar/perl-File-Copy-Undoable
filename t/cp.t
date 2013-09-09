@@ -68,7 +68,7 @@ test_tx_action(
     tmpdir        => $tmpdir,
     f             => "File::Copy::Undoable::cp",
     args          => {source=>"s", target=>"t",
-                      rsync_opts=>"--foo", # bogus
+                      rsync_opts=>["--foo"], # bogus
                   },
     reset_state   => sub {
         remove_tree "s", "t";
