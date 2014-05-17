@@ -1,5 +1,12 @@
 Revision history for File-Copy-Undoable
 
+0.05    2014-05-17 (SHARYANTO)
+
+        - No functional changes.
+
+        - Replace File::Slurp with File::Slurp::Tiny.
+
+
 0.04    2013-09-09 (SHARYANTO)
 
         - No functional changes. Fix wrong argument type --rsync_opts in t/cp.t

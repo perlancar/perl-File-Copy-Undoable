@@ -10,7 +10,7 @@ use lib $Bin, "$Bin/t";
 use File::chdir;
 use File::Copy::Undoable;
 use File::Path qw(remove_tree);
-use File::Slurp;
+use File::Slurp::Tiny qw(read_file write_file);
 use File::Temp qw(tempdir);
 use File::Which;
 use Test::More 0.98;
