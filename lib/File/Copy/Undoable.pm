@@ -1,17 +1,18 @@
 package File::Copy::Undoable;
 
+# DATE
+# VERSION
+
 use 5.010001;
 use strict;
 use warnings;
 use Log::Any '$log';
 
 use Builtin::Logged qw(system);
+use File::MoreUtil qw(file_exists);
 use File::Trash::Undoable;
 #use PerlX::Maybe;
 use Proc::ChildError qw(explain_child_error);
-use SHARYANTO::File::Util qw(file_exists);
-
-# VERSION
 
 our %SPEC;
 
