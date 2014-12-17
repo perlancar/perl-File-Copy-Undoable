@@ -148,7 +148,7 @@ sub cp {
 }
 
 1;
-# ABSTRACT: Copy file/directory using rsync, with undo support
+# ABSTRACT:
 
 =head1 FAQ
 
