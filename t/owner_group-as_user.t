@@ -36,10 +36,20 @@ test_tx_action(
     after_do     => sub {
         ok( (-d "t"), "t exists");
         is(scalar(read_file "t/f1"), "foo", "t/f1 exists");
+        my @st_dir = stat ".";
         my @st = stat "t";
         is($st[4], $>, "owner still user");
-        is($st[5], $)+0, "group still user's group");
-
+        subtest "group still user's group" => sub {
+            # [RT#95194] "New files and directories inherit their groups from
+            # their parent directory at creation time." /tmp and /var/tmp belong
+            # to the group "wheel", so any directory and file created here will
+            # also belong to the group "wheel".
+            if ($^O eq 'freebsd') {
+                is($st[5], $st_dir[5]);
+            } else {
+                is($st[5], $)+0);
+            }
+        };
     },
     after_undo   => sub {
         ok(!(-e "t"), "t doesn't exist");
