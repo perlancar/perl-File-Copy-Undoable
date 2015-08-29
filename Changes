@@ -1,5 +1,10 @@
 Revision history for File-Copy-Undoable
 
+0.08    2015-08-29 (PERLANCAR)
+
+	- Adjust test for FreeBSD [RT#95194].
+
+
 0.07    2015-08-17 (PERLANCAR)
 
 	- No functional changes.
