@@ -8,7 +8,7 @@ use strict;
 use warnings;
 use Log::Any::IfLOG '$log';
 
-use Builtin::Logged qw(system);
+use IPC::System::Options 'system', -log=>1;
 use File::MoreUtil qw(file_exists);
 use File::Trash::Undoable;
 #use PerlX::Maybe;
