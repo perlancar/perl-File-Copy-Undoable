@@ -1,5 +1,14 @@
 Revision history for File-Copy-Undoable
 
+0.10    2016-06-09 (PERLANCAR)
+
+	- No functional changes.
+
+	- [test] Replace File::Slurp::Tiny with File::Slurper.
+
+	- [dist] Replace Builtin::Logged with IPC::System::Options.
+
+
 0.09    2015-09-03 (PERLANCAR)
 
 	- No functional changes.
