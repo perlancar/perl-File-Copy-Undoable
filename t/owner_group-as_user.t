@@ -10,7 +10,7 @@ use lib $Bin, "$Bin/t";
 use File::chdir;
 use File::Copy::Undoable;
 use File::Path qw(remove_tree);
-use File::Slurp::Tiny qw(read_file write_file);
+use File::Slurper qw(read_text write_text);
 use File::Temp qw(tempdir);
 use Test::More 0.98;
 use Test::Perinci::Tx::Manager qw(test_tx_action);
@@ -31,11 +31,11 @@ test_tx_action(
                       target_owner=>$uid, target_group=>$gid},
     reset_state   => sub {
         remove_tree "s", "t";
-        mkdir "s"; write_file("s/f1", "foo");
+        mkdir "s"; write_text("s/f1", "foo");
     },
     after_do     => sub {
         ok( (-d "t"), "t exists");
-        is(scalar(read_file "t/f1"), "foo", "t/f1 exists");
+        is(scalar(read_text "t/f1"), "foo", "t/f1 exists");
         my @st_dir = stat ".";
         my @st = stat "t";
         is($st[4], $>, "owner still user");
