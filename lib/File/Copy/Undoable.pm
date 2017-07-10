@@ -6,7 +6,7 @@ package File::Copy::Undoable;
 use 5.010001;
 use strict;
 use warnings;
-use Log::Any::IfLOG '$log';
+use Log::ger;
 
 use IPC::System::Options 'system', -log=>1;
 use File::MoreUtil qw(file_exists);
@@ -115,7 +115,7 @@ sub cp {
             # transfer, so we allow target to exist
             return [304, "Target $target already exists"] if $te;
         }
-        $log->info("(DRY) ".
+        log_info("(DRY) ".
                        ($te ? "Syncing" : "Copying")." $source -> $target ...")
             if $dry_run;
         return [200, "$source needs to be ".($te ? "synced":"copied").
@@ -125,12 +125,12 @@ sub cp {
 
     } elsif ($tx_action eq 'fix_state') {
         my @cmd = ("rsync", @$rsync_opts, "$source/", "$target/");
-        $log->info("Rsync-ing $source -> $target ...");
+        log_info("Rsync-ing $source -> $target ...");
         system @cmd;
         return [500, "Can't rsync: ".explain_child_error($?)] if $?;
         if (defined($args{target_owner}) || defined($args{target_group})) {
             if ($> == 0) {
-                $log->info("Chown-ing $target ...");
+                log_info("Chown-ing $target ...");
                 @cmd = (
                     "chown", "-Rh",
                     join("", $args{target_owner}//"", ":",
@@ -139,7 +139,7 @@ sub cp {
                 system @cmd;
                 return [500, "Can't chown: ".explain_child_error($?)] if $?;
             } else {
-                $log->debug("Not running as root, not doing chown");
+                log_debug("Not running as root, not doing chown");
             }
         }
         return [200, "OK"];
