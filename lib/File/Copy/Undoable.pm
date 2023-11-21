@@ -1,18 +1,20 @@
 package File::Copy::Undoable;
 
-# DATE
-# VERSION
-
 use 5.010001;
 use strict;
 use warnings;
 use Log::ger;
 
-use IPC::System::Options 'system', -log=>1;
-use File::MoreUtil qw(file_exists);
 use File::Trash::Undoable;
+use File::Util::Test qw(file_exists);
+use IPC::System::Options 'system', -log=>1;
 #use PerlX::Maybe;
 use Proc::ChildError qw(explain_child_error);
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 our %SPEC;
 
